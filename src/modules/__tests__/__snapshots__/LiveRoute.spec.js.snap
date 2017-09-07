@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LiveRoute should render correctly via snapshot 1`] = `
+<div>
+  <LiveMessage
+    aria-live="assertive"
+    message="Mock loaded"
+  />
+  <Route
+    component={[Function]}
+    path="/demo"
+  />
+</div>
+`;
+
+exports[`LiveRoute should render correctly via snapshot for default aria live level 1`] = `
+<div>
+  <LiveMessage
+    aria-live="polite"
+    message="Mock loaded"
+  />
+  <Route
+    component={[Function]}
+    path="/demo"
+  />
+</div>
+`;
