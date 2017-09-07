@@ -1,64 +1,84 @@
-# react-aria-live
+# react-aria-live-route
 
-With this package you can broadcast `aria-live` messages to assistive technology from anywhere in your React applications.
+With this package you can easily transmit ARIA-LIVE messages to screen readers for router transitions in React Router v4.x.
 
-[ARIA Live Regions](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Live_Regions) are used to communicate important information to `screen reader software`.
+Router transitions are typically silent for screen reader users if we do not write code to inform them that the application has transitioned.
 
-In web applications we make a lot of changes to our pages using JavaScript. These changes can be completely undetected by screen readers, meaning that not all our users are being notified of important changes to our applications.
+Using `react-aria-live-route` you can now make use of the exported `LiveRoute` component to replace any `Route` components that should inform screen readers on their activation.
 
-A very common example in web applications, is the use of routing software. We need to tell screen readers that a new route has been loaded, as this is usually not automatically detected.
-
-Other examples are error situations, or content and state changes in our application that could be very clear visually but not detected by screen readers.
-
-Using `react-aria-live` you can broadcast these important messages easily from any component in your application.
-
-The technical double announcer region implementation of `react-aria-live` was inspired by [ngA11y](https://github.com/dequelabs/ngA11y).
+The package requires the installation and usage of [react-aria-live](https://github.com/AlmeroSteyn/react-aria-live) in your application.
 
 ## Installation
 
 ```
 npm install react-aria-live
+npm install react-aria-live-route
 ```
 
 or
 
 ```
 yarn add react-aria-live
+yarn add react-aria-live-route
 ```
 
 ## Usage
 
-The library exports two components, namely `LiveAnnouncer` and `LiveMessage`.
+The library exports one component, namely `LiveRoute`.
 
-Wrap you React application in the `LiveAnnouncer` component. It will render a visually hidden message area in your application that can broadcast `aria-live` messages. `LiveAnnouncer` is best placed as high up as possible in your component tree, as `ARIA Live Regions` are sensitive to changes to the HTML rendering these regions. Best results are obtained when the HTML is rendered only once when the application root component is mounted.
+Before using it you will need to wrap your application in the `LiveAnnouncer` component from `react-aria-live`.
 
-Now you can use the `LiveMessage` component to send `polite` or `assertive` messages. Messages are only triggered when the bound `message` prop changes.
+Then you can start using the new route component anywhere in your application where you would normally use the `Route` component of react-router v4.x.
+
+Aside from accepting the same props as the `Route` component, this component can also be configured with a non-empty text message that you would like to transmit to screen readers on route activation and an aria-live level of either `polite` or `assertive`.
+
+Not specifying the level will default to `polite`.
 
 ```
 import React, { Component } from 'react';
-import { LiveAnnouncer, LiveMessage } from 'react-aria-live';
+import { render } from 'react-dom';
+import { BrowserRouter as Router, Link, Redirect, Switch } from 'react-router-dom';
+import { LiveAnnouncer } from 'react-aria-live';
+import LiveRoute from '../../src/modules/LiveRoute';
 
-class MyApp extends Component {
-  state = {
-    a11yMessage: '',
-  };
+const Demo1View = () => <span>Demo 1 View</span>;
+const Demo2View = () => <span>Demo 2 View</span>;
 
+class Demo extends Component {
   render() {
     return (
       <LiveAnnouncer>
-        <LiveMessage message={this.state.a11yMessage} aria-live="polite" />
-        <button
-          onClick={() => {
-            this.setState({ a11yMessage: 'Button Pressed' });
-          }}>
-          Press me
-        </button>
+        <Router>
+          <div>
+            <Link to="/demo1">Goto demo1</Link>
+            <br />
+            <Link to="/demo2">Goto demo2</Link>
+            <main>
+              <Switch>
+                <LiveRoute
+                  exact
+                  path="/demo1"
+                  component={Demo1View}
+                  liveMessage="Demo 1 component loaded"
+                  aria-live="polite"
+                />
+                <LiveRoute
+                  path="/demo2"
+                  component={Demo2View}
+                  liveMessage="Demo 2 component loaded"
+                  aria-live="polite"
+                />
+                <Redirect to="/demo1" />
+              </Switch>
+            </main>
+          </div>
+        </Router>
       </LiveAnnouncer>
     );
   }
 }
 
-export default MyApp;
+export default Demo;
 ```
 
-The `LiveMessage` component does not have to exist in the same component as `LiveAnnouncer`, as long as it exists inside a component tree wrapped by `LiveAnnouncer`.
+**Please note**: The `LiveAnnouncer` component should ideally be the root component of your app tree to avoid unexpected browser aria-live behaviour.
