@@ -1,6 +1,6 @@
 {
   "name": "react-aria-live-route",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Auto announce react router navigation",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -20,7 +20,7 @@
   "dependencies": {},
   "peerDependencies": {
     "react-aria-live": "1.x",
-    "react": "15.x",
+    "react": "15.x || ^16.0.0-rc",
     "react-router-dom": "4.x"
   },
   "devDependencies": {
